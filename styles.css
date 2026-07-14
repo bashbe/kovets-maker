@@ -23,6 +23,38 @@
 }
 
 @font-face {
+  font-family: "PDF JBilna Bold";
+  src: url("assets/fonts/PDF-JBilna-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PDF JName";
+  src: url("assets/fonts/PDF-JName.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PDF JNarkis Bold";
+  src: url("assets/fonts/PDF-JNarkis-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PDF JNarkis";
+  src: url("assets/fonts/PDF-JNarkis.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Frank Ruhl Local";
   src: url("assets/fonts/FrankRuhlHofshi-Bold.otf") format("opentype");
   font-style: normal;
@@ -330,6 +362,11 @@ label small,
   text-align: center;
 }
 
+.fixed-value-multiline {
+  white-space: pre-line;
+  line-height: 1.35;
+}
+
 .toggle-row {
   display: flex;
   align-items: center;
@@ -539,10 +576,28 @@ input[type="color"] {
   font-family: "Frank Ruhl Local", "Times New Roman", serif;
 }
 
-#cover .header-text {
-  font-family: "Frank Ruhl Local", "David Libre Local", serif;
+#cover.font-heritage .header-text,
+#cover.font-david .header-text,
+#cover.font-frank .header-text {
+  font-family: "PDF JBilna Bold", "PDF JName", "Frank Ruhl Local", "David Libre Local", serif;
   font-size: 17px;
   font-weight: 700;
+}
+
+#cover .pdf-jbilna {
+  font-family: "PDF JBilna Bold", "PDF JName", "David Libre Local", serif;
+}
+
+#cover .pdf-jname {
+  font-family: "PDF JName", "David Libre Local", serif;
+}
+
+#cover .pdf-jnarkis-bold {
+  font-family: "PDF JNarkis Bold", "David Libre Local", serif;
+}
+
+#cover .pdf-jnarkis {
+  font-family: "PDF JNarkis", "David Libre Local", serif;
 }
 
 #cover .main-title {

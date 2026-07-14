@@ -63,7 +63,7 @@
                 </span>
                 <input id="show-header" name="showHeader" type="checkbox" />
               </label>
-              <p class="fixed-value" dir="rtl" lang="he">ספרי׳ — אוצר החסידים — ליובאוויטש</p>
+              <p id="fixed-header-value" class="fixed-value" dir="rtl" lang="he"></p>
             </div>
           </details>
 
@@ -89,9 +89,10 @@
               <label>
                 <span>Formule prédéfinie</span>
                 <select name="attributionPreset" dir="rtl" lang="he">
-                  <option value="rebbe-full">כבוד קדושת אדמו״ר מנחם מענדל שניאורסאהן מליובאוויטש</option>
+                  <option id="attribution-rebbe-full-option" value="rebbe-full"></option>
                 </select>
               </label>
+              <p id="fixed-attribution-preview" class="fixed-value fixed-value-multiline" dir="rtl" lang="he"></p>
             </div>
           </details>
 
@@ -120,7 +121,7 @@
             <div class="field-stack">
               <div>
                 <span class="field-caption">Texte fixe</span>
-                <p class="fixed-value" dir="rtl" lang="he">יוצא לאור על ידי מערכת</p>
+                <p id="fixed-publisher-value" class="fixed-value" dir="rtl" lang="he"></p>
               </div>
               <label>
                 <span>Nom de l’éditeur <small>Les guillemets sont ajoutés automatiquement</small></span>
@@ -146,9 +147,10 @@
               <label>
                 <span>Année de publication</span>
                 <select name="publicationYear" dir="rtl" lang="he">
-                  <option value="5786">ה׳תשפ״ו · 5786</option>
+                  <option id="publication-year-5786-option" value="5786"></option>
                 </select>
               </label>
+              <p id="fixed-publication-year-preview" class="fixed-value" dir="rtl" lang="he"></p>
               <label>
                 <span>Commémoration particulière</span>
                 <textarea name="commemoration" rows="2" dir="rtl" lang="he"></textarea>

@@ -1,21 +1,27 @@
 const STORAGE_KEY = "kovets-maker-cover-v2";
 
-const FIXED_HEADER = "ספרי׳ — אוצר החסידים — ליובאוויטש";
-const FIXED_PUBLISHER_LINE = "יוצא לאור על ידי מערכת";
+const PDF_TEXT = Object.freeze({
+  header: "ספרי׳ — אוצר החסידים — ליובאוויטש",
+  publisherIntro: "יוצא לאור על ידי מערכת",
+  attribution: {
+    "rebbe-full": [
+      "כבוד קדושת",
+      "אדמו״ר מנחם מענדל",
+      "זצוקללה״ה נבג״מ זי״ע",
+      "שניאורסאהן",
+      "מליובאוויטש",
+    ],
+  },
+  publicationYears: {
+    5786: "שנת חמשת אלפים שבע מאות שמונים ושש לבריאה",
+  },
+});
 
 const ATTRIBUTION_PRESETS = Object.freeze({
-  "rebbe-full": [
-    "כבוד קדושת",
-    "אדמו״ר מנחם מענדל",
-    "זצוקללה״ה נבג״מ זי״ע",
-    "שניאורסאהן",
-    "מליובאוויטש",
-  ].join("\n"),
+  "rebbe-full": PDF_TEXT.attribution["rebbe-full"].join("\n"),
 });
 
-const PUBLICATION_YEAR_PRESETS = Object.freeze({
-  5786: "שנת חמשת אלפים שבע מאות שמונים ושש לבריאה",
-});
+const PUBLICATION_YEAR_PRESETS = Object.freeze(PDF_TEXT.publicationYears);
 
 const DEFAULTS = Object.freeze({
   frame: "rebbe",
@@ -48,6 +54,14 @@ const zoomOutput = document.querySelector("#zoom-output");
 const logoUpload = document.querySelector("#logo-upload");
 const customLogoField = document.querySelector("#custom-logo-field");
 const customLogoName = document.querySelector("#custom-logo-name");
+const staticText = {
+  header: document.querySelector("#fixed-header-value"),
+  publisherIntro: document.querySelector("#fixed-publisher-value"),
+  attributionPreview: document.querySelector("#fixed-attribution-preview"),
+  attributionOption: document.querySelector("#attribution-rebbe-full-option"),
+  publicationYearPreview: document.querySelector("#fixed-publication-year-preview"),
+  publicationYearOption: document.querySelector("#publication-year-5786-option"),
+};
 
 const elements = {
   headerLayer: document.querySelector("#header-layer"),
@@ -79,6 +93,7 @@ function loadState() {
 }
 
 function populateForm() {
+  populateStaticText();
   Object.entries(state).forEach(([key, value]) => {
     const field = form.elements.namedItem(key);
     if (!field || field.type === "file") return;
@@ -90,6 +105,15 @@ function populateForm() {
   });
   logoUpload.value = "";
   syncConditionalControls();
+}
+
+function populateStaticText() {
+  staticText.header.textContent = PDF_TEXT.header;
+  staticText.publisherIntro.textContent = PDF_TEXT.publisherIntro;
+  staticText.attributionPreview.textContent = ATTRIBUTION_PRESETS["rebbe-full"];
+  staticText.attributionOption.textContent = ATTRIBUTION_PRESETS["rebbe-full"].replace(/\n/g, " · ");
+  staticText.publicationYearPreview.textContent = PUBLICATION_YEAR_PRESETS[5786];
+  staticText.publicationYearOption.textContent = `ה׳תשפ״ו · 5786 · ${PUBLICATION_YEAR_PRESETS[5786]}`;
 }
 
 function readForm() {
@@ -150,9 +174,11 @@ function setAttribution(value) {
     { y: 393, size: 17, weight: 400, maxWidth: 350 },
   ];
   elements.attribution.replaceChildren();
+  const pdfClasses = ["pdf-jbilna", "pdf-jname", "pdf-jbilna", "pdf-jnarkis-bold", "pdf-jnarkis"];
   lines.slice(0, 7).forEach((line, index) => {
     const fallback = { y: 282 + index * 25, size: 18, weight: 400, maxWidth: 430 };
-    appendTspan(elements.attribution, line, layout[index] || fallback);
+    const span = appendTspan(elements.attribution, line, layout[index] || fallback);
+    if (pdfClasses[index]) span.classList.add(pdfClasses[index]);
   });
 }
 
@@ -171,7 +197,7 @@ function setPublication(value) {
 
 function setPublisher(lines) {
   elements.publisher.replaceChildren();
-  appendTspan(elements.publisher, lines[0], { y: 707, size: 16, maxWidth: 360 });
+  appendTspan(elements.publisher, lines[0], { y: 707, size: 16, maxWidth: 360 }).classList.add("pdf-jnarkis");
   appendTspan(elements.publisher, lines[1], { y: 731, size: 20, weight: 700, maxWidth: 360 });
   appendTspan(elements.publisher, lines[2], { x: 432, y: 755, size: 14, maxWidth: 235 });
   appendTspan(elements.publisher, lines[3], { x: 168, y: 755, size: 14, maxWidth: 200 });
@@ -180,12 +206,13 @@ function setPublisher(lines) {
 function setChronology(lines) {
   elements.chronology.replaceChildren();
   lines.filter(Boolean).slice(0, 3).forEach((line, index, filtered) => {
-    appendTspan(elements.chronology, line, {
+    const span = appendTspan(elements.chronology, line, {
       y: 780 + index * 20,
       size: index === filtered.length - 1 ? 16 : 14,
       weight: index === filtered.length - 1 ? 700 : 400,
       maxWidth: 450,
     });
+    if (index === 0) span.classList.add("pdf-jnarkis");
   });
 }
 
@@ -210,13 +237,13 @@ function render() {
 
   elements.ornament.style.display = state.frame === "rebbe" ? "" : "none";
   elements.headerLayer.style.display = state.showHeader ? "" : "none";
-  setSingleLine(elements.header, FIXED_HEADER, { size: 17, maxWidth: 390, weight: 700 });
+  setSingleLine(elements.header, PDF_TEXT.header, { size: 17, maxWidth: 390, weight: 700 });
   setSingleLine(elements.title, state.title, { size: 54, maxWidth: 420, weight: 700 });
   setAttribution(ATTRIBUTION_PRESETS[state.attributionPreset] || ATTRIBUTION_PRESETS["rebbe-full"]);
   setSingleLine(elements.eventDate, state.eventDate, { size: 20, maxWidth: 440, weight: 700 });
   setPublication(state.publication);
   setPublisher([
-    FIXED_PUBLISHER_LINE,
+    PDF_TEXT.publisherIntro,
     `״${state.publisherName.trim()}״`,
     state.publisherStreet.trim(),
     state.publisherCity.trim(),
@@ -350,6 +377,10 @@ function embeddedFontCss() {
       ["David Libre Local", "assets/fonts/DavidLibre-Bold.ttf", 700, "truetype"],
       ["Frank Ruhl Local", "assets/fonts/FrankRuhlHofshi-Regular.otf", 400, "opentype"],
       ["Frank Ruhl Local", "assets/fonts/FrankRuhlHofshi-Bold.otf", 700, "opentype"],
+      ["PDF JBilna Bold", "assets/fonts/PDF-JBilna-Bold.ttf", 700, "truetype"],
+      ["PDF JName", "assets/fonts/PDF-JName.ttf", 400, "truetype"],
+      ["PDF JNarkis Bold", "assets/fonts/PDF-JNarkis-Bold.ttf", 700, "truetype"],
+      ["PDF JNarkis", "assets/fonts/PDF-JNarkis.ttf", 400, "truetype"],
     ];
     embeddedFontCssPromise = Promise.all(
       fonts.map(async ([family, url, weight, format]) => {
@@ -384,7 +415,12 @@ async function buildExportSvg() {
     .cover-ink-stroke{stroke:${state.inkColor}}
     text{direction:rtl;unicode-bidi:plaintext;font-family:'David Libre Local',serif}
     .font-frank text{font-family:'Frank Ruhl Local',serif}
-    .header-text,.main-title{font-family:'Frank Ruhl Local','David Libre Local',serif}
+    .header-text{font-family:'PDF JBilna Bold','PDF JName','Frank Ruhl Local','David Libre Local',serif}
+    .main-title{font-family:'Frank Ruhl Local','David Libre Local',serif}
+    .pdf-jbilna{font-family:'PDF JBilna Bold','PDF JName','David Libre Local',serif}
+    .pdf-jname{font-family:'PDF JName','David Libre Local',serif}
+    .pdf-jnarkis-bold{font-family:'PDF JNarkis Bold','David Libre Local',serif}
+    .pdf-jnarkis{font-family:'PDF JNarkis','David Libre Local',serif}
   `;
   clone.insertBefore(exportStyles, clone.firstChild);
   return clone;

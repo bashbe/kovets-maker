@@ -30,3 +30,5 @@ L’application ne nécessite ni compilation ni serveur applicatif. Le dossier p
 - export PNG 1800 × 2700 pixels, correspondant à 6 × 9 pouces à 300 ppp.
 
 L’ornement vectoriel et le logo Kehot proviennent de la première page du PDF de référence fourni pour ce projet.
+
+Les textes non modifiables utilisent les sous-ensembles `JBilna`, `JName` et `JNarkis` intégrés à cette page. Leurs tables Unicode ont été reconstruites uniquement pour les glyphes fixes présents dans la couverture ; les champs libres conservent donc des fontes complètes.
