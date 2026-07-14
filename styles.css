@@ -1,8 +1,64 @@
 @font-face {
+  font-family: "PDF JNarkis Rebuilt";
+  src: url("assets/fonts/PDF-narkis-regular.ttf?v=20260714-5") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PDF JNarkis Rebuilt";
+  src: url("assets/fonts/PDF-narkis-bold.ttf?v=20260714-5") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PDF JNarkis Digits";
+  src: url("assets/fonts/PDF-narkis-digits.ttf?v=20260714-4") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PDF JDavid Rebuilt";
+  src: url("assets/fonts/PDF-david-regular.ttf?v=20260714-5") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PDF JDavid Rebuilt";
+  src: url("assets/fonts/PDF-david-bold.ttf?v=20260714-5") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "David Libre Local";
   src: url("assets/fonts/DavidLibre-Regular.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Narkiss Yair Local";
+  src: url("assets/fonts/NarkissYair-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Narkiss Yair Local";
+  src: url("assets/fonts/NarkissYair-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
   font-display: swap;
 }
 
@@ -17,38 +73,6 @@
 @font-face {
   font-family: "Frank Ruhl Local";
   src: url("assets/fonts/FrankRuhlHofshi-Regular.otf") format("opentype");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "PDF JBilna Bold";
-  src: url("assets/fonts/PDF-JBilna-Bold.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "PDF JName";
-  src: url("assets/fonts/PDF-JName.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "PDF JNarkis Bold";
-  src: url("assets/fonts/PDF-JNarkis-Bold.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "PDF JNarkis";
-  src: url("assets/fonts/PDF-JNarkis.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -550,7 +574,15 @@ input[type="color"] {
   display: block;
   width: 100%;
   height: 100%;
-  background: #fffefb;
+  background: #fff;
+}
+
+#cover .pdf-mask {
+  fill: #fff;
+}
+
+#cover #custom-logo-layer[hidden] {
+  display: none;
 }
 
 #cover .cover-ink {
@@ -576,33 +608,9 @@ input[type="color"] {
   font-family: "Frank Ruhl Local", "Times New Roman", serif;
 }
 
-#cover.font-heritage .header-text,
-#cover.font-david .header-text,
-#cover.font-frank .header-text {
-  font-family: "PDF JBilna Bold", "PDF JName", "Frank Ruhl Local", "David Libre Local", serif;
-  font-size: 17px;
-  font-weight: 700;
-}
-
-#cover .pdf-jbilna {
-  font-family: "PDF JBilna Bold", "PDF JName", "David Libre Local", serif;
-}
-
-#cover .pdf-jname {
-  font-family: "PDF JName", "David Libre Local", serif;
-}
-
-#cover .pdf-jnarkis-bold {
-  font-family: "PDF JNarkis Bold", "David Libre Local", serif;
-}
-
-#cover .pdf-jnarkis {
-  font-family: "PDF JNarkis", "David Libre Local", serif;
-}
-
 #cover .main-title {
-  font-family: "Frank Ruhl Local", "David Libre Local", serif;
-  font-size: 54px;
+  font-family: "PDF JNarkis Rebuilt", "Narkiss Yair Local", "David Libre Local", serif;
+  font-size: 66.67px;
   font-weight: 700;
 }
 
@@ -618,23 +626,44 @@ input[type="color"] {
 }
 
 #cover .event-date-text {
-  font-size: 20px;
+  font-family: "PDF JNarkis Rebuilt", "Narkiss Yair Local", "David Libre Local", serif;
+  font-size: 22.22px;
   font-weight: 700;
 }
 
 #cover .publication-text {
-  font-size: 16px;
+  font-family: "PDF JDavid Rebuilt", "David Libre Local", serif;
+  font-size: 18.06px;
   font-weight: 400;
 }
 
+#cover .publication-lead {
+  font-family: "PDF JDavid Rebuilt", "David Libre Local", serif;
+  font-weight: 700;
+}
+
 #cover .publisher-text {
+  font-family: "PDF JNarkis Rebuilt", "Narkiss Yair Local", "David Libre Local", serif;
   font-size: 17px;
   font-weight: 400;
 }
 
-#cover .chronology-text {
-  font-size: 15px;
+#cover .publisher-name-line {
+  font-weight: 700;
+}
+
+#cover .address-line {
   font-weight: 400;
+}
+
+#cover .address-digits {
+  font-family: "PDF JNarkis Digits", sans-serif;
+}
+
+#cover .chronology-text {
+  font-family: "PDF JNarkis Rebuilt", "Narkiss Yair Local", "David Libre Local", serif;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .toast {
@@ -719,10 +748,6 @@ input[type="color"] {
 
 @media (max-width: 460px) {
   .brand small,
-  #export-svg {
-    display: none;
-  }
-
   .brand-mark {
     width: 34px;
     height: 34px;

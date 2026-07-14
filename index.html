@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Éditeur de couvertures 6 × 9 pour kovtsim de si'hot et maamarim." />
     <title>Kovets Maker</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260714-5" />
   </head>
   <body>
     <header class="app-header">
@@ -19,8 +19,7 @@
       <div class="header-actions">
         <span id="save-status" class="save-status" role="status">Prêt</span>
         <button id="reset-button" class="button button-secondary" type="button">Réinitialiser</button>
-        <button id="export-svg" class="button button-secondary" type="button">SVG</button>
-        <button id="export-png" class="button button-primary" type="button">Exporter PNG</button>
+        <button id="export-pdf" class="button button-primary" type="button">Exporter PDF</button>
       </div>
     </header>
 
@@ -185,7 +184,7 @@
         <div class="preview-toolbar">
           <div>
             <p class="eyebrow">Aperçu en direct</p>
-            <p class="preview-note">Format final 6 × 9 pouces · export 300 ppp</p>
+            <p class="preview-note">Gabarit PDF original · format final 6 × 9 pouces</p>
           </div>
           <div class="zoom-controls" aria-label="Zoom de l’aperçu">
             <button id="zoom-out" class="icon-button" type="button" aria-label="Réduire le zoom">−</button>
@@ -199,23 +198,34 @@
             <svg id="cover" viewBox="0 0 600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cover-title cover-description">
               <title id="cover-title">Couverture personnalisée</title>
               <desc id="cover-description">Aperçu d’une couverture de kovets avec ornement traditionnel et texte hébraïque.</desc>
-              <rect id="paper" width="600" height="900" fill="#fffefb" />
-              <g id="ornament" class="cover-ink" transform="scale(1.3888889)"></g>
-              <g id="cover-text" class="cover-ink" text-anchor="middle" direction="rtl">
-                <g id="header-layer">
-                  <line class="cover-ink-stroke" x1="100.5" x2="500.5" y1="128.5" y2="128.5" stroke-width="1.4" />
-                  <text id="header-text" class="header-text" x="300" y="115"></text>
+              <image href="assets/cover-template.png" width="600" height="900" preserveAspectRatio="none" />
+              <g id="overlay-root">
+                <g id="header-mask-layer">
+                  <rect class="pdf-mask" x="94" y="98" width="412" height="36" />
                 </g>
-                <text id="main-title" class="main-title" x="300" y="238"></text>
-                <text id="attribution-text" class="attribution-text" x="300" y="282"></text>
-                <circle cx="300" cy="426" r="5.2" />
-                <text id="event-date-text" class="event-date-text" x="300" y="492"></text>
-                <text id="publication-text" class="publication-text" x="300" y="535"></text>
-                <text id="publisher-text" class="publisher-text" x="300" y="727"></text>
-                <text id="chronology-text" class="chronology-text" x="300" y="794"></text>
-              </g>
+                <g id="editable-layer" class="cover-ink" text-anchor="middle" direction="rtl">
+                  <rect class="pdf-mask" x="158" y="184" width="284" height="72" />
+                  <text id="main-title" class="main-title" x="300" y="238"></text>
 
-              <image id="kehot-logo" href="assets/kehot-logo.png" x="261" y="570" width="78" height="97" preserveAspectRatio="xMidYMid meet" />
+                  <rect class="pdf-mask" x="138" y="462" width="324" height="42" />
+                  <text id="event-date-text" class="event-date-text" x="300" y="485"></text>
+
+                  <rect class="pdf-mask" x="136" y="506" width="328" height="40" />
+                  <text id="publication-text" class="publication-text" x="300" y="525"></text>
+
+                  <rect class="pdf-mask" x="218" y="718" width="164" height="29" />
+                  <rect class="pdf-mask" x="96" y="744" width="408" height="25" />
+                  <text id="publisher-text" class="publisher-text" x="300" y="738"></text>
+
+                  <rect class="pdf-mask" x="168" y="782" width="264" height="27" />
+                  <text id="chronology-text" class="chronology-text" x="300" y="796"></text>
+                </g>
+
+                <g id="custom-logo-layer" hidden>
+                  <rect class="pdf-mask" x="250" y="558" width="100" height="119" />
+                  <image id="custom-logo-preview" x="261" y="570" width="78" height="97" preserveAspectRatio="xMidYMid meet" />
+                </g>
+              </g>
             </svg>
           </div>
         </div>
@@ -223,6 +233,7 @@
     </main>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js" defer></script>
+    <script src="assets/vendor/pdf-lib.min.js?v=20260714-5" defer></script>
+    <script src="app.js?v=20260714-5" defer></script>
   </body>
 </html>

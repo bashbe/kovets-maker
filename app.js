@@ -1,4 +1,4 @@
-const STORAGE_KEY = "kovets-maker-cover-v2";
+const STORAGE_KEY = "kovets-maker-cover-v4";
 
 const PDF_TEXT = Object.freeze({
   header: "ספרי׳ — אוצר החסידים — ליובאוויטש",
@@ -29,23 +29,47 @@ const DEFAULTS = Object.freeze({
   title: "התוועדות",
   attributionPreset: "rebbe-full",
   eventDate: "ש״פ ואתחנן, חמשה עשר באב, ה׳תשל״ז",
-  publication: "חלק א — יוצא לאור לש״פ דברים, ד׳ מנחם־אב, ה׳תשפ״ו",
+  publication: "חלק א – יוצא לאור לש״פ דברים, ד׳ מנחם־אב, ה׳תשפ״ו",
   publisherName: "אוצר החסידים",
-  publisherStreet: "770 איסטערן פארקוויי",
+  publisherStreet: "770 איסטערן \uFB44א\u05B7רקוויי",
   publisherCity: "ברוקלין, נ.י.",
   publicationYear: "5786",
   commemoration: "שבעים ושש שנה לנשיאות כ״ק אדמו״ר זי״ע",
   logoChoice: "kehot",
   customLogoData: "",
   customLogoName: "",
-  paperColor: "#fffefb",
-  inkColor: "#211f1d",
-  fontStyle: "heritage",
 });
+
+const PDF_TO_SVG = 600 / 432;
+
+function pdfBlock(id, selector, x, y, width, height) {
+  return Object.freeze({
+    id,
+    selector,
+    pdf: { x, y, width, height },
+    svg: {
+      x: x * PDF_TO_SVG,
+      y: (648 - y - height) * PDF_TO_SVG,
+      width: width * PDF_TO_SVG,
+      height: height * PDF_TO_SVG,
+    },
+  });
+}
+
+const PDF_BLOCKS = Object.freeze([
+  pdfBlock("title", "#main-title", 90, 458, 252, 58),
+  pdfBlock("event-date", "#event-date-text", 90, 289, 252, 28),
+  pdfBlock("publication", "#publication-text", 90, 262, 252, 23),
+  pdfBlock("publisher-name", "#publisher-text", 100, 111, 232, 18),
+  pdfBlock("address", "#publisher-text", 65, 98, 302, 14),
+  pdfBlock("commemoration", "#chronology-text", 100, 69, 232, 16),
+]);
+
+const PDF_LOGO_BLOCK = pdfBlock("custom-logo", "#custom-logo-preview", 186, 166, 61, 75);
 
 const form = document.querySelector("#cover-form");
 const cover = document.querySelector("#cover");
-const paper = document.querySelector("#paper");
+const overlayRoot = document.querySelector("#overlay-root");
 const coverFrame = document.querySelector("#cover-frame");
 const previewStage = document.querySelector("#preview-stage");
 const saveStatus = document.querySelector("#save-status");
@@ -64,16 +88,14 @@ const staticText = {
 };
 
 const elements = {
-  headerLayer: document.querySelector("#header-layer"),
-  header: document.querySelector("#header-text"),
+  headerMask: document.querySelector("#header-mask-layer"),
   title: document.querySelector("#main-title"),
-  attribution: document.querySelector("#attribution-text"),
   eventDate: document.querySelector("#event-date-text"),
   publication: document.querySelector("#publication-text"),
   publisher: document.querySelector("#publisher-text"),
   chronology: document.querySelector("#chronology-text"),
-  logo: document.querySelector("#kehot-logo"),
-  ornament: document.querySelector("#ornament"),
+  customLogoLayer: document.querySelector("#custom-logo-layer"),
+  customLogo: document.querySelector("#custom-logo-preview"),
 };
 
 let state = loadState();
@@ -81,7 +103,6 @@ let saveTimer;
 let toastTimer;
 let zoom = 0.72;
 let zoomWasAdjusted = false;
-let ornamentReady;
 
 function loadState() {
   try {
@@ -133,22 +154,29 @@ function cleanLines(value) {
     .filter(Boolean);
 }
 
-function setSingleLine(element, value, { size, maxWidth, weight } = {}) {
-  element.replaceChildren();
-  element.textContent = value.trim();
-  if (size) element.style.fontSize = `${size}px`;
-  if (weight) element.style.fontWeight = weight;
-  fitText(element, maxWidth, size);
-}
-
-function fitText(element, maxWidth, preferredSize) {
+function fitText(element, maxWidth, preferredSize, preserveHeight = false) {
   if (!maxWidth || !preferredSize || !element.textContent) return;
+  element.removeAttribute("textLength");
+  element.removeAttribute("lengthAdjust");
   element.style.fontSize = `${preferredSize}px`;
   const measured = element.getComputedTextLength();
   if (measured > maxWidth) {
-    const fitted = Math.max(10, preferredSize * (maxWidth / measured));
-    element.style.fontSize = `${fitted.toFixed(2)}px`;
+    if (preserveHeight) {
+      element.setAttribute("textLength", String(maxWidth));
+      element.setAttribute("lengthAdjust", "spacingAndGlyphs");
+    } else {
+      const fitted = Math.max(10, preferredSize * (maxWidth / measured));
+      element.style.fontSize = `${fitted.toFixed(2)}px`;
+    }
   }
+}
+
+function setSingleLine(element, value, { size, maxWidth, weight, preserveHeight } = {}) {
+  element.replaceChildren();
+  element.textContent = String(value).trim();
+  if (size) element.style.fontSize = `${size}px`;
+  if (weight) element.style.fontWeight = String(weight);
+  fitText(element, maxWidth, size, preserveHeight);
 }
 
 function appendTspan(parent, text, options) {
@@ -158,67 +186,75 @@ function appendTspan(parent, text, options) {
   span.setAttribute("y", String(options.y));
   span.style.fontSize = `${options.size}px`;
   span.style.fontWeight = String(options.weight ?? 400);
-  if (options.anchor) span.setAttribute("text-anchor", options.anchor);
   parent.append(span);
-  fitText(span, options.maxWidth ?? 430, options.size);
+  fitText(span, options.maxWidth ?? 430, options.size, options.preserveHeight);
   return span;
-}
-
-function setAttribution(value) {
-  const lines = cleanLines(value);
-  const layout = [
-    { y: 282, size: 16, weight: 700, maxWidth: 340 },
-    { y: 316, size: 31, weight: 400, maxWidth: 430 },
-    { y: 342, size: 15, weight: 700, maxWidth: 390 },
-    { y: 369, size: 19, weight: 700, maxWidth: 350 },
-    { y: 393, size: 17, weight: 400, maxWidth: 350 },
-  ];
-  elements.attribution.replaceChildren();
-  const pdfClasses = ["pdf-jbilna", "pdf-jname", "pdf-jbilna", "pdf-jnarkis-bold", "pdf-jnarkis"];
-  lines.slice(0, 7).forEach((line, index) => {
-    const fallback = { y: 282 + index * 25, size: 18, weight: 400, maxWidth: 430 };
-    const span = appendTspan(elements.attribution, line, layout[index] || fallback);
-    if (pdfClasses[index]) span.classList.add(pdfClasses[index]);
-  });
 }
 
 function setPublication(value) {
   const lines = cleanLines(value);
   elements.publication.replaceChildren();
-  lines.slice(0, 3).forEach((line, index) => {
-    appendTspan(elements.publication, line, {
-      y: 535 + index * 22,
-      size: index === 0 ? 16 : 15,
-      weight: index === 0 ? 400 : 700,
-      maxWidth: 445,
+  lines.slice(0, 1).forEach((line, index) => {
+    const match = line.match(/^(חלק\s+[אב])(\s+[–—-]\s+.+)$/u);
+    const span = appendTspan(elements.publication, "", {
+      y: 525 + index * 20,
+      size: index === 0 ? 18.06 : 15,
+      weight: 400,
+      maxWidth: 303,
+      preserveHeight: true,
     });
+    if (match) {
+      const lead = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+      lead.textContent = match[1];
+      lead.classList.add("publication-lead");
+      const remainder = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+      remainder.textContent = match[2];
+      span.append(lead, remainder);
+    } else {
+      span.textContent = line;
+    }
+    fitText(span, 303, index === 0 ? 18.06 : 15, true);
   });
 }
 
-function setPublisher(lines) {
+function setPublisher() {
   elements.publisher.replaceChildren();
-  appendTspan(elements.publisher, lines[0], { y: 707, size: 16, maxWidth: 360 }).classList.add("pdf-jnarkis");
-  appendTspan(elements.publisher, lines[1], { y: 731, size: 20, weight: 700, maxWidth: 360 });
-  appendTspan(elements.publisher, lines[2], { x: 432, y: 755, size: 14, maxWidth: 235 });
-  appendTspan(elements.publisher, lines[3], { x: 168, y: 755, size: 14, maxWidth: 200 });
-}
-
-function setChronology(lines) {
-  elements.chronology.replaceChildren();
-  lines.filter(Boolean).slice(0, 3).forEach((line, index, filtered) => {
-    const span = appendTspan(elements.chronology, line, {
-      y: 780 + index * 20,
-      size: index === filtered.length - 1 ? 16 : 14,
-      weight: index === filtered.length - 1 ? 700 : 400,
-      maxWidth: 450,
-    });
-    if (index === 0) span.classList.add("pdf-jnarkis");
+  appendTspan(elements.publisher, `„${state.publisherName.trim()}״`, {
+    y: 738,
+    size: 18.06,
+    weight: 700,
+    maxWidth: 300,
+  }).classList.add("publisher-name-line");
+  const street = state.publisherStreet.trim();
+  const streetLine = appendTspan(elements.publisher, "", {
+    x: 445,
+    y: 759,
+    size: 14,
+    maxWidth: 225,
   });
+  streetLine.classList.add("address-line");
+  const streetMatch = street.match(/^(770)(\s+)(.+)$/u);
+  if (streetMatch) {
+    const digits = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+    digits.textContent = streetMatch[1];
+    digits.classList.add("address-digits");
+    streetLine.append(digits, document.createTextNode(`${streetMatch[2]}${streetMatch[3]}`));
+  } else {
+    streetLine.textContent = street;
+  }
+  fitText(streetLine, 225, 14);
+  appendTspan(elements.publisher, state.publisherCity.trim(), {
+    x: 131,
+    y: 759,
+    size: 14,
+    maxWidth: 190,
+  }).classList.add("address-line");
 }
 
 function renderLogo() {
   const useCustom = state.logoChoice === "custom" && state.customLogoData;
-  elements.logo.setAttribute("href", useCustom ? state.customLogoData : "assets/kehot-logo.png");
+  elements.customLogoLayer.hidden = !useCustom;
+  if (useCustom) elements.customLogo.setAttribute("href", state.customLogoData);
 }
 
 function syncConditionalControls() {
@@ -230,31 +266,19 @@ function syncConditionalControls() {
 }
 
 function render() {
-  paper.setAttribute("fill", state.paperColor);
-  cover.style.setProperty("--cover-ink", state.inkColor);
-  cover.classList.remove("font-heritage", "font-david", "font-frank");
-  cover.classList.add(`font-${state.fontStyle}`);
-
-  elements.ornament.style.display = state.frame === "rebbe" ? "" : "none";
-  elements.headerLayer.style.display = state.showHeader ? "" : "none";
-  setSingleLine(elements.header, PDF_TEXT.header, { size: 17, maxWidth: 390, weight: 700 });
-  setSingleLine(elements.title, state.title, { size: 54, maxWidth: 420, weight: 700 });
-  setAttribution(ATTRIBUTION_PRESETS[state.attributionPreset] || ATTRIBUTION_PRESETS["rebbe-full"]);
-  setSingleLine(elements.eventDate, state.eventDate, { size: 20, maxWidth: 440, weight: 700 });
+  elements.headerMask.style.display = state.showHeader ? "none" : "";
+  setSingleLine(elements.title, state.title, { size: 66.67, maxWidth: 330, weight: 700 });
+  setSingleLine(elements.eventDate, state.eventDate, {
+    size: 22.22,
+    maxWidth: 293,
+    weight: 700,
+    preserveHeight: true,
+  });
   setPublication(state.publication);
-  setPublisher([
-    PDF_TEXT.publisherIntro,
-    `״${state.publisherName.trim()}״`,
-    state.publisherStreet.trim(),
-    state.publisherCity.trim(),
-  ]);
-  setChronology([
-    PUBLICATION_YEAR_PRESETS[state.publicationYear] || PUBLICATION_YEAR_PRESETS[5786],
-    state.commemoration.trim(),
-  ]);
+  setPublisher();
+  setSingleLine(elements.chronology, state.commemoration, { size: 15, maxWidth: 300, weight: 700 });
   renderLogo();
   syncConditionalControls();
-
   document.querySelector("#cover-title").textContent = state.title || "Couverture personnalisée";
 }
 
@@ -278,7 +302,7 @@ function showToast(message) {
   clearTimeout(toastTimer);
   toast.textContent = message;
   toast.classList.add("is-visible");
-  toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2600);
+  toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2800);
 }
 
 function handleFormInput(event) {
@@ -319,16 +343,6 @@ function handleLogoUpload(event) {
   reader.readAsDataURL(file);
 }
 
-async function loadOrnament() {
-  const response = await fetch("assets/ornament.svg");
-  if (!response.ok) throw new Error("Impossible de charger l’ornement.");
-  const markup = await response.text();
-  const parsed = new DOMParser().parseFromString(markup, "image/svg+xml");
-  [...parsed.documentElement.children].forEach((node) => {
-    elements.ornament.append(document.importNode(node, true));
-  });
-}
-
 function setZoom(next, userInitiated = true) {
   zoom = Math.min(1.08, Math.max(0.38, next));
   if (userInitiated) zoomWasAdjusted = true;
@@ -365,22 +379,29 @@ function dataUrlFromBlob(blob) {
 
 async function assetDataUrl(url) {
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`Asset inaccessible: ${url}`);
+  if (!response.ok) throw new Error(`Ressource inaccessible : ${url}`);
   return dataUrlFromBlob(await response.blob());
+}
+
+async function assetBytes(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Ressource inaccessible : ${url}`);
+  return new Uint8Array(await response.arrayBuffer());
 }
 
 let embeddedFontCssPromise;
 function embeddedFontCss() {
   if (!embeddedFontCssPromise) {
     const fonts = [
+      ["PDF JNarkis Rebuilt", "assets/fonts/PDF-narkis-regular.ttf?v=20260714-5", 400, "truetype"],
+      ["PDF JNarkis Rebuilt", "assets/fonts/PDF-narkis-bold.ttf?v=20260714-5", 700, "truetype"],
+      ["PDF JNarkis Digits", "assets/fonts/PDF-narkis-digits.ttf?v=20260714-4", 400, "truetype"],
+      ["PDF JDavid Rebuilt", "assets/fonts/PDF-david-regular.ttf?v=20260714-5", 400, "truetype"],
+      ["PDF JDavid Rebuilt", "assets/fonts/PDF-david-bold.ttf?v=20260714-5", 700, "truetype"],
+      ["Narkiss Yair Local", "assets/fonts/NarkissYair-Regular.woff2", 400, "woff2"],
+      ["Narkiss Yair Local", "assets/fonts/NarkissYair-Bold.woff2", 700, "woff2"],
       ["David Libre Local", "assets/fonts/DavidLibre-Regular.ttf", 400, "truetype"],
       ["David Libre Local", "assets/fonts/DavidLibre-Bold.ttf", 700, "truetype"],
-      ["Frank Ruhl Local", "assets/fonts/FrankRuhlHofshi-Regular.otf", 400, "opentype"],
-      ["Frank Ruhl Local", "assets/fonts/FrankRuhlHofshi-Bold.otf", 700, "opentype"],
-      ["PDF JBilna Bold", "assets/fonts/PDF-JBilna-Bold.ttf", 700, "truetype"],
-      ["PDF JName", "assets/fonts/PDF-JName.ttf", 400, "truetype"],
-      ["PDF JNarkis Bold", "assets/fonts/PDF-JNarkis-Bold.ttf", 700, "truetype"],
-      ["PDF JNarkis", "assets/fonts/PDF-JNarkis.ttf", 400, "truetype"],
     ];
     embeddedFontCssPromise = Promise.all(
       fonts.map(async ([family, url, weight, format]) => {
@@ -392,38 +413,61 @@ function embeddedFontCss() {
   return embeddedFontCssPromise;
 }
 
-async function resolvedLogoDataUrl() {
-  if (state.logoChoice === "custom" && state.customLogoData) return state.customLogoData;
-  return assetDataUrl("assets/kehot-logo.png");
+function exportFontStyles(fontCss) {
+  return `${fontCss}
+    text{direction:rtl;unicode-bidi:plaintext;text-anchor:middle;fill:#211f1d;font-family:'PDF JNarkis Rebuilt','Narkiss Yair Local','David Libre Local',serif}
+    .main-title,.event-date-text,.publisher-name-line,.chronology-text{font-family:'PDF JNarkis Rebuilt','Narkiss Yair Local','David Libre Local',serif;font-weight:700}
+    .publication-text{font-family:'PDF JDavid Rebuilt','David Libre Local',serif;font-weight:400}
+    .publication-lead{font-family:'PDF JDavid Rebuilt','David Libre Local',serif;font-weight:700}
+    .address-line{font-family:'PDF JNarkis Rebuilt','Narkiss Yair Local','David Libre Local',serif;font-weight:400}
+    .address-digits{font-family:'PDF JNarkis Digits',sans-serif;font-weight:400}
+  `;
 }
 
-async function buildExportSvg() {
-  await ornamentReady;
+async function renderPdfBlockPngBytes(block) {
   await document.fonts.ready;
-  const [fontCss, logoDataUrl] = await Promise.all([embeddedFontCss(), resolvedLogoDataUrl()]);
+  const fontCss = await embeddedFontCss();
+  const { x, y, width, height } = block.svg;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  svg.setAttribute("viewBox", `${x} ${y} ${width} ${height}`);
+  svg.setAttribute("width", String(Math.ceil(width * 3)));
+  svg.setAttribute("height", String(Math.ceil(height * 3)));
 
-  const clone = cover.cloneNode(true);
-  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  clone.setAttribute("width", "6in");
-  clone.setAttribute("height", "9in");
-  clone.style.setProperty("--cover-ink", state.inkColor);
-  clone.querySelector("#kehot-logo").setAttribute("href", logoDataUrl);
+  const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+  style.textContent = exportFontStyles(fontCss);
+  const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  background.setAttribute("x", String(x));
+  background.setAttribute("y", String(y));
+  background.setAttribute("width", String(width));
+  background.setAttribute("height", String(height));
+  background.setAttribute("fill", "#fff");
+  const sourceElement = document.querySelector(block.selector).cloneNode(true);
+  svg.append(style, background, sourceElement);
 
-  const exportStyles = document.createElementNS("http://www.w3.org/2000/svg", "style");
-  exportStyles.textContent = `${fontCss}
-    .cover-ink{fill:${state.inkColor};color:${state.inkColor}}
-    .cover-ink-stroke{stroke:${state.inkColor}}
-    text{direction:rtl;unicode-bidi:plaintext;font-family:'David Libre Local',serif}
-    .font-frank text{font-family:'Frank Ruhl Local',serif}
-    .header-text{font-family:'PDF JBilna Bold','PDF JName','Frank Ruhl Local','David Libre Local',serif}
-    .main-title{font-family:'Frank Ruhl Local','David Libre Local',serif}
-    .pdf-jbilna{font-family:'PDF JBilna Bold','PDF JName','David Libre Local',serif}
-    .pdf-jname{font-family:'PDF JName','David Libre Local',serif}
-    .pdf-jnarkis-bold{font-family:'PDF JNarkis Bold','David Libre Local',serif}
-    .pdf-jnarkis{font-family:'PDF JNarkis','David Libre Local',serif}
-  `;
-  clone.insertBefore(exportStyles, clone.firstChild);
-  return clone;
+  const markup = new XMLSerializer().serializeToString(svg);
+  const source = URL.createObjectURL(new Blob([markup], { type: "image/svg+xml;charset=utf-8" }));
+  try {
+    const image = new Image();
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = reject;
+      image.src = source;
+    });
+
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.ceil(width * 3);
+    canvas.height = Math.ceil(height * 3);
+    const context = canvas.getContext("2d");
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1));
+    if (!blob) throw new Error(`Le navigateur n’a pas produit le bloc ${block.id}.`);
+    return new Uint8Array(await blob.arrayBuffer());
+  } finally {
+    URL.revokeObjectURL(source);
+  }
 }
 
 function downloadBlob(blob, filename) {
@@ -434,61 +478,50 @@ function downloadBlob(blob, filename) {
   document.body.append(anchor);
   anchor.click();
   anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
 function safeFilename() {
-  const fallback = "couverture-kovets";
-  const title = state.title.trim();
-  if (!title) return fallback;
-  return `${fallback}-${title.replace(/[\\/:*?"<>|\s]+/g, "-").replace(/^-|-$/g, "")}`;
+  return "couverture-kovets";
 }
 
-async function exportSvg() {
-  try {
-    showToast("Préparation du SVG…");
-    const svg = await buildExportSvg();
-    const markup = new XMLSerializer().serializeToString(svg);
-    downloadBlob(new Blob([markup], { type: "image/svg+xml;charset=utf-8" }), `${safeFilename()}.svg`);
-    showToast("SVG exporté");
-  } catch (error) {
-    console.error(error);
-    showToast("L’export SVG a échoué");
-  }
+function forcePdf14Header(pdfBytes) {
+  const header = new TextEncoder().encode("%PDF-1.4");
+  pdfBytes.set(header, 0);
+  return pdfBytes;
 }
 
-async function exportPng() {
-  const button = document.querySelector("#export-png");
+async function exportPdf() {
+  const button = document.querySelector("#export-pdf");
   const originalLabel = button.textContent;
   try {
     button.disabled = true;
     button.textContent = "Préparation…";
-    const svg = await buildExportSvg();
-    svg.setAttribute("width", "1800");
-    svg.setAttribute("height", "2700");
-    const markup = new XMLSerializer().serializeToString(svg);
-    const source = URL.createObjectURL(new Blob([markup], { type: "image/svg+xml;charset=utf-8" }));
-    const image = new Image();
-    await new Promise((resolve, reject) => {
-      image.onload = resolve;
-      image.onerror = reject;
-      image.src = source;
-    });
+    showToast("Création du PDF à partir de la page originale…");
+    if (!window.PDFLib) throw new Error("PDF-Lib n’est pas chargé.");
 
-    const canvas = document.createElement("canvas");
-    canvas.width = 1800;
-    canvas.height = 2700;
-    const context = canvas.getContext("2d");
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-    URL.revokeObjectURL(source);
+    const blocks = [...PDF_BLOCKS];
+    if (state.logoChoice === "custom" && state.customLogoData) blocks.push(PDF_LOGO_BLOCK);
+    const [templateBytes, ...blockImages] = await Promise.all([
+      assetBytes("assets/cover-template.pdf"),
+      ...blocks.map((block) => renderPdfBlockPngBytes(block)),
+    ]);
+    const pdfDocument = await window.PDFLib.PDFDocument.load(templateBytes);
+    const page = pdfDocument.getPage(0);
+    if (!state.showHeader) {
+      page.drawRectangle({ x: 70, y: 552, width: 292, height: 23, color: window.PDFLib.rgb(1, 1, 1) });
+    }
+    for (const [index, block] of blocks.entries()) {
+      const image = await pdfDocument.embedPng(blockImages[index]);
+      page.drawImage(image, block.pdf);
+    }
+    const pdfBytes = forcePdf14Header(await pdfDocument.save({ useObjectStreams: false }));
 
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1));
-    if (!blob) throw new Error("Le navigateur n’a pas produit le PNG.");
-    downloadBlob(blob, `${safeFilename()}.png`);
-    showToast("PNG 1800 × 2700 exporté");
+    downloadBlob(new Blob([pdfBytes], { type: "application/pdf" }), `${safeFilename()}.pdf`);
+    showToast("PDF créé avec le gabarit original");
   } catch (error) {
     console.error(error);
-    showToast("L’export PNG a échoué");
+    showToast("L’export PDF a échoué");
   } finally {
     button.disabled = false;
     button.textContent = originalLabel;
@@ -499,8 +532,7 @@ form.addEventListener("input", handleFormInput);
 form.addEventListener("change", handleFormInput);
 logoUpload.addEventListener("change", handleLogoUpload);
 document.querySelector("#reset-button").addEventListener("click", resetCover);
-document.querySelector("#export-svg").addEventListener("click", exportSvg);
-document.querySelector("#export-png").addEventListener("click", exportPng);
+document.querySelector("#export-pdf").addEventListener("click", exportPdf);
 document.querySelector("#zoom-out").addEventListener("click", () => setZoom(zoom - 0.08));
 document.querySelector("#zoom-in").addEventListener("click", () => setZoom(zoom + 0.08));
 document.querySelector("#collapse-all").addEventListener("click", () => {
@@ -519,11 +551,6 @@ document.querySelector("#collapse-all").addEventListener("click", () => {
 window.addEventListener("resize", fitZoom);
 
 populateForm();
-ornamentReady = loadOrnament().catch((error) => {
-  console.error(error);
-  showToast("L’ornement n’a pas pu être chargé");
-});
-
 document.fonts.ready.then(() => {
   render();
   fitZoom();

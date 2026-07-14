@@ -1,0 +1,145 @@
+{
+  "narkis-regular": {
+    "sources": [
+      "tmp\\pdfs\\font-sources\\bNnh13764926\\TT4-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\gzec12825804\\TT4-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\jqNh11999944\\TT4-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\NIZD13699702\\TT4-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\Nmpr12558172\\TT4-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\vhZO13750421\\TT4-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\wZGd13329013\\TT4-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\xdxU13773815\\TT4-Narkis.ttf"
+    ],
+    "base_source": "tmp\\pdfs\\font-sources\\bNnh13764926\\TT4-Narkis.ttf",
+    "source_outline_counts": [
+      27,
+      27,
+      27,
+      27,
+      27,
+      27,
+      27,
+      27
+    ],
+    "merged_outline_count": 27,
+    "available_characters": "אבדהוחטיכלםמןנסעפצקרשת",
+    "missing_characters": "גזךףץ",
+    "mapped_codepoints": 27,
+    "available_hebrew": "אבדהוחטיכלםמןנסעפצקרשת",
+    "missing_hebrew": "גזךףץ",
+    "output": "assets\\fonts\\PDF-narkis-regular.ttf",
+    "output_bytes": 11588
+  },
+  "narkis-bold": {
+    "sources": [
+      "tmp\\pdfs\\font-sources\\bNnh13764926\\TT3-Narkis-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\gzec12825804\\TT3-Narkis-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\jqNh11999944\\TT3-Narkis-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\NIZD13699702\\TT3-Narkis-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\Nmpr12558172\\TT3-Narkis-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\vhZO13750421\\TT3-Narkis-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\wZGd13329013\\TT3-Narkis-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\xdxU13773815\\TT3-Narkis-Bold.ttf"
+    ],
+    "base_source": "tmp\\pdfs\\font-sources\\wZGd13329013\\TT3-Narkis-Bold.ttf",
+    "source_outline_counts": [
+      29,
+      26,
+      28,
+      28,
+      27,
+      28,
+      30,
+      27
+    ],
+    "merged_outline_count": 33,
+    "available_characters": "אבגדהוזחטיךכלםמןנסעףפץצקרשת",
+    "missing_characters": "",
+    "mapped_codepoints": 35,
+    "available_hebrew": "אבגדהוזחטיךכלםמןנסעףפץצקרשת",
+    "missing_hebrew": "",
+    "output": "assets\\fonts\\PDF-narkis-bold.ttf",
+    "output_bytes": 10776
+  },
+  "david-regular": {
+    "sources": [
+      "tmp\\pdfs\\font-sources\\bNnh13764926\\TT6-David.ttf",
+      "tmp\\pdfs\\font-sources\\gzec12825804\\TT7-David.ttf",
+      "tmp\\pdfs\\font-sources\\jqNh11999944\\TT6-David.ttf",
+      "tmp\\pdfs\\font-sources\\NIZD13699702\\TT6-David.ttf",
+      "tmp\\pdfs\\font-sources\\Nmpr12558172\\TT6-David.ttf",
+      "tmp\\pdfs\\font-sources\\vhZO13750421\\TT6-David.ttf",
+      "tmp\\pdfs\\font-sources\\wZGd13329013\\TT6-David.ttf",
+      "tmp\\pdfs\\font-sources\\xdxU13773815\\TT6-David.ttf"
+    ],
+    "base_source": "tmp\\pdfs\\font-sources\\jqNh11999944\\TT6-David.ttf",
+    "source_outline_counts": [
+      24,
+      19,
+      25,
+      19,
+      19,
+      21,
+      20,
+      22
+    ],
+    "merged_outline_count": 29,
+    "available_characters": "אבגדהוזחטיכלםמנסעפצקרשת",
+    "missing_characters": "ךןףץ",
+    "mapped_codepoints": 31,
+    "available_hebrew": "אבגדהוזחטיכלםמנסעפצקרשת",
+    "missing_hebrew": "ךןףץ",
+    "output": "assets\\fonts\\PDF-david-regular.ttf",
+    "output_bytes": 7792
+  },
+  "david-bold": {
+    "sources": [
+      "tmp\\pdfs\\font-sources\\bNnh13764926\\TT7-David-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\jqNh11999944\\TT7-David-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\NIZD13699702\\TT7-David-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\Nmpr12558172\\TT7-David-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\vhZO13750421\\TT7-David-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\wZGd13329013\\TT7-David-Bold.ttf",
+      "tmp\\pdfs\\font-sources\\xdxU13773815\\TT7-David-Bold.ttf"
+    ],
+    "base_source": "tmp\\pdfs\\font-sources\\bNnh13764926\\TT7-David-Bold.ttf",
+    "source_outline_counts": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "merged_outline_count": 6,
+    "available_characters": "אבחלק",
+    "missing_characters": "גדהוזטיךכםמןנסעףפץצרשת",
+    "mapped_codepoints": 6,
+    "available_hebrew": "אבחלק",
+    "missing_hebrew": "גדהוזטיךכםמןנסעףפץצרשת",
+    "output": "assets\\fonts\\PDF-david-bold.ttf",
+    "output_bytes": 4396
+  },
+  "narkis-digits": {
+    "sources": [
+      "tmp\\pdfs\\font-sources\\bNnh13764926\\TT8-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\jqNh11999944\\TT8-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\Nmpr12558172\\TT8-Narkis.ttf",
+      "tmp\\pdfs\\font-sources\\xdxU13773815\\TT8-Narkis.ttf"
+    ],
+    "base_source": "tmp\\pdfs\\font-sources\\bNnh13764926\\TT8-Narkis.ttf",
+    "source_outline_counts": [
+      3,
+      3,
+      3,
+      3
+    ],
+    "merged_outline_count": 3,
+    "available_characters": "07",
+    "missing_characters": "",
+    "mapped_codepoints": 2,
+    "output": "assets\\fonts\\PDF-narkis-digits.ttf",
+    "output_bytes": 4412
+  }
+}
