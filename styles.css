@@ -1,0 +1,697 @@
+@font-face {
+  font-family: "David Libre Local";
+  src: url("assets/fonts/DavidLibre-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "David Libre Local";
+  src: url("assets/fonts/DavidLibre-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Frank Ruhl Local";
+  src: url("assets/fonts/FrankRuhlHofshi-Regular.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Frank Ruhl Local";
+  src: url("assets/fonts/FrankRuhlHofshi-Bold.otf") format("opentype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  --app-background: #e9e6df;
+  --panel: #f8f6f1;
+  --panel-strong: #ffffff;
+  --ink: #27231f;
+  --muted: #777067;
+  --line: #d8d2c8;
+  --line-strong: #c8c0b4;
+  --accent: #76553c;
+  --accent-hover: #5d402d;
+  --accent-soft: #eee4da;
+  --success: #42664f;
+  --shadow: 0 22px 70px rgba(45, 38, 31, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--app-background);
+  color: var(--ink);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 68px;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(73, 61, 50, 0.14);
+  background: rgba(248, 246, 241, 0.94);
+  backdrop-filter: blur(18px);
+}
+
+.brand,
+.header-actions,
+.panel-heading,
+.preview-toolbar,
+.zoom-controls {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  gap: 11px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--ink);
+  color: white;
+  font-family: "Frank Ruhl Local", serif;
+  font-size: 23px;
+}
+
+.brand strong,
+.brand small {
+  display: block;
+}
+
+.brand strong {
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.brand small {
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.header-actions {
+  gap: 8px;
+}
+
+.save-status {
+  min-width: 76px;
+  margin-right: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: right;
+}
+
+.save-status.is-saved {
+  color: var(--success);
+}
+
+.button,
+.icon-button {
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.button {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.button:hover,
+.icon-button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active,
+.icon-button:active {
+  transform: translateY(0);
+}
+
+.button-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.button-primary:hover {
+  background: var(--accent-hover);
+}
+
+.button-secondary {
+  border-color: var(--line);
+  background: var(--panel-strong);
+}
+
+.button-secondary:hover {
+  border-color: var(--line-strong);
+  background: #f5f1eb;
+}
+
+.icon-button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-color: var(--line);
+  border-radius: 9px;
+  background: var(--panel-strong);
+  font-size: 18px;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid rgba(118, 85, 60, 0.24);
+  outline-offset: 2px;
+}
+
+.editor-shell {
+  display: grid;
+  grid-template-columns: minmax(330px, 390px) minmax(0, 1fr);
+  min-height: calc(100vh - 68px);
+}
+
+.control-panel {
+  max-height: calc(100vh - 68px);
+  overflow: auto;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.panel-heading {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  justify-content: space-between;
+  padding: 24px 24px 17px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(248, 246, 241, 0.96);
+  backdrop-filter: blur(12px);
+}
+
+.eyebrow {
+  margin: 0 0 5px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: 19px;
+  letter-spacing: -0.025em;
+}
+
+#cover-form details {
+  border-bottom: 1px solid var(--line);
+}
+
+#cover-form summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 58px;
+  padding: 0 24px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  list-style: none;
+  user-select: none;
+}
+
+#cover-form summary::-webkit-details-marker {
+  display: none;
+}
+
+#cover-form summary:hover {
+  background: rgba(118, 85, 60, 0.045);
+}
+
+.summary-index {
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.field-stack {
+  display: grid;
+  gap: 14px;
+  padding: 0 24px 22px;
+}
+
+.two-columns {
+  grid-template-columns: 1fr 1fr;
+}
+
+.full-row {
+  grid-column: 1 / -1;
+}
+
+label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+label > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+label small,
+.field-caption {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.field-caption {
+  display: block;
+  margin-bottom: 7px;
+}
+
+.fixed-value {
+  margin: 0;
+  padding: 11px 12px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 9px;
+  background: rgba(118, 85, 60, 0.045);
+  color: var(--ink);
+  font-family: "David Libre Local", David, serif;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.toggle-row > span {
+  display: grid;
+  justify-content: initial;
+  gap: 2px;
+  color: var(--ink);
+}
+
+.toggle-row input[type="checkbox"] {
+  position: relative;
+  flex: 0 0 auto;
+  width: 42px;
+  min-height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--line-strong);
+  appearance: none;
+  cursor: pointer;
+}
+
+.toggle-row input[type="checkbox"]::after {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(39, 35, 31, 0.25);
+  content: "";
+  transition: transform 160ms ease;
+}
+
+.toggle-row input[type="checkbox"]:checked {
+  background: var(--accent);
+}
+
+.toggle-row input[type="checkbox"]:checked::after {
+  transform: translateX(18px);
+}
+
+.conditional-field[hidden] {
+  display: none;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-strong);
+  color: var(--ink);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+input,
+select {
+  min-height: 42px;
+  padding: 0 11px;
+}
+
+textarea {
+  min-height: 76px;
+  padding: 10px 11px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+input[dir="rtl"],
+textarea[dir="rtl"],
+select[dir="rtl"] {
+  font-family: "David Libre Local", David, serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+input[type="file"] {
+  min-height: auto;
+  padding: 8px;
+  font-size: 11px;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 10px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--accent-soft);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: var(--line-strong);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(118, 85, 60, 0.1);
+  outline: none;
+}
+
+input[type="range"] {
+  min-height: 24px;
+  padding: 0;
+  accent-color: var(--accent);
+}
+
+input[type="color"] {
+  padding: 4px;
+  cursor: pointer;
+}
+
+.preview-workspace {
+  min-width: 0;
+  padding: 20px 24px 32px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.58), transparent 36%),
+    var(--app-background);
+}
+
+.preview-toolbar {
+  justify-content: space-between;
+  width: min(100%, 780px);
+  min-height: 42px;
+  margin: 0 auto 14px;
+}
+
+.preview-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.zoom-controls {
+  gap: 9px;
+}
+
+.zoom-controls output {
+  min-width: 42px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.preview-stage {
+  display: grid;
+  min-height: calc(100vh - 160px);
+  place-items: start center;
+  overflow: auto;
+  padding: 8px 18px 60px;
+  scrollbar-width: thin;
+}
+
+.cover-frame {
+  width: 432px;
+  aspect-ratio: 2 / 3;
+  transform-origin: top center;
+  box-shadow: var(--shadow);
+  transition: width 180ms ease;
+}
+
+#cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #fffefb;
+}
+
+#cover .cover-ink {
+  fill: var(--cover-ink, #211f1d);
+  color: var(--cover-ink, #211f1d);
+}
+
+#cover .cover-ink-stroke {
+  stroke: var(--cover-ink, #211f1d);
+}
+
+#cover text {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+#cover.font-heritage text,
+#cover.font-david text {
+  font-family: "David Libre Local", David, serif;
+}
+
+#cover.font-frank text {
+  font-family: "Frank Ruhl Local", "Times New Roman", serif;
+}
+
+#cover .header-text {
+  font-family: "Frank Ruhl Local", "David Libre Local", serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+#cover .main-title {
+  font-family: "Frank Ruhl Local", "David Libre Local", serif;
+  font-size: 54px;
+  font-weight: 700;
+}
+
+#cover .attribution-text {
+  font-size: 23px;
+  font-weight: 700;
+}
+
+#cover .attribution-text .minor,
+#cover .publisher-text .minor,
+#cover .chronology-text .minor {
+  font-weight: 400;
+}
+
+#cover .event-date-text {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+#cover .publication-text {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+#cover .publisher-text {
+  font-size: 17px;
+  font-weight: 400;
+}
+
+#cover .chronology-text {
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 40;
+  max-width: min(360px, calc(100vw - 40px));
+  padding: 11px 14px;
+  border-radius: 9px;
+  background: var(--ink);
+  color: white;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 980px) {
+  .editor-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel {
+    max-height: none;
+    overflow: visible;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .panel-heading {
+    position: static;
+  }
+
+  .preview-stage {
+    min-height: 700px;
+  }
+}
+
+@media (max-width: 700px) {
+  .app-header {
+    position: static;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .header-actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .save-status,
+  #reset-button {
+    display: none;
+  }
+
+  .button {
+    min-height: 36px;
+    padding: 0 11px;
+  }
+
+  .preview-workspace {
+    padding: 18px 0 26px;
+  }
+
+  .preview-toolbar {
+    padding: 0 16px;
+  }
+
+  .preview-stage {
+    min-height: 600px;
+    padding-inline: 12px;
+  }
+}
+
+@media (max-width: 460px) {
+  .brand small,
+  #export-svg {
+    display: none;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .panel-heading,
+  #cover-form summary {
+    padding-inline: 18px;
+  }
+
+  .field-stack {
+    padding-inline: 18px;
+  }
+
+  .preview-note {
+    max-width: 190px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

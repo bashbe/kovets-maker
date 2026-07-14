@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Éditeur de couvertures 6 × 9 pour kovtsim de si'hot et maamarim." />
+    <title>Kovets Maker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand" aria-label="Kovets Maker">
+        <span class="brand-mark" aria-hidden="true">ק</span>
+        <span>
+          <strong>Kovets Maker</strong>
+          <small>Couvertures 6 × 9</small>
+        </span>
+      </div>
+      <div class="header-actions">
+        <span id="save-status" class="save-status" role="status">Prêt</span>
+        <button id="reset-button" class="button button-secondary" type="button">Réinitialiser</button>
+        <button id="export-svg" class="button button-secondary" type="button">SVG</button>
+        <button id="export-png" class="button button-primary" type="button">Exporter PNG</button>
+      </div>
+    </header>
+
+    <main class="editor-shell">
+      <aside class="control-panel" aria-label="Contenu de la couverture">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Édition</p>
+            <h1>Contenu de la couverture</h1>
+          </div>
+          <button id="collapse-all" class="icon-button" type="button" aria-label="Replier les sections">−</button>
+        </div>
+
+        <form id="cover-form" autocomplete="off">
+          <details open>
+            <summary>
+              <span>מסגרת · Cadre</span>
+              <span class="summary-index">01</span>
+            </summary>
+            <div class="field-stack">
+              <label>
+                <span>Ornement de couverture</span>
+                <select name="frame">
+                  <option value="rebbe">Cadre des livres du Rabbi</option>
+                </select>
+              </label>
+            </div>
+          </details>
+
+          <details open>
+            <summary>
+              <span>En-tête de collection</span>
+              <span class="summary-index">02</span>
+            </summary>
+            <div class="field-stack">
+              <label class="toggle-row" for="show-header">
+                <span>
+                  <strong>Afficher l’en-tête</strong>
+                  <small>Le texte et la ligne sont activés ensemble.</small>
+                </span>
+                <input id="show-header" name="showHeader" type="checkbox" />
+              </label>
+              <p class="fixed-value" dir="rtl" lang="he">ספרי׳ — אוצר החסידים — ליובאוויטש</p>
+            </div>
+          </details>
+
+          <details open>
+            <summary>
+              <span>Titre</span>
+              <span class="summary-index">03</span>
+            </summary>
+            <div class="field-stack">
+              <label>
+                <span>Titre principal</span>
+                <input name="title" dir="rtl" lang="he" />
+              </label>
+            </div>
+          </details>
+
+          <details open>
+            <summary>
+              <span>Attribution au Rabbi</span>
+              <span class="summary-index">04</span>
+            </summary>
+            <div class="field-stack">
+              <label>
+                <span>Formule prédéfinie</span>
+                <select name="attributionPreset" dir="rtl" lang="he">
+                  <option value="rebbe-full">כבוד קדושת אדמו״ר מנחם מענדל שניאורסאהן מליובאוויטש</option>
+                </select>
+              </label>
+            </div>
+          </details>
+
+          <details open>
+            <summary>
+              <span>Dates</span>
+              <span class="summary-index">05</span>
+            </summary>
+            <div class="field-stack">
+              <label>
+                <span>Date du farbrenguen</span>
+                <input name="eventDate" dir="rtl" lang="he" />
+              </label>
+              <label>
+                <span>Date de publication</span>
+                <textarea name="publication" rows="2" dir="rtl" lang="he"></textarea>
+              </label>
+            </div>
+          </details>
+
+          <details>
+            <summary>
+              <span>Éditeur et adresse</span>
+              <span class="summary-index">06</span>
+            </summary>
+            <div class="field-stack">
+              <div>
+                <span class="field-caption">Texte fixe</span>
+                <p class="fixed-value" dir="rtl" lang="he">יוצא לאור על ידי מערכת</p>
+              </div>
+              <label>
+                <span>Nom de l’éditeur <small>Les guillemets sont ajoutés automatiquement</small></span>
+                <input name="publisherName" dir="rtl" lang="he" />
+              </label>
+              <label>
+                <span>Rue</span>
+                <input name="publisherStreet" dir="rtl" lang="he" />
+              </label>
+              <label>
+                <span>Ville</span>
+                <input name="publisherCity" dir="rtl" lang="he" />
+              </label>
+            </div>
+          </details>
+
+          <details>
+            <summary>
+              <span>Année et commémoration</span>
+              <span class="summary-index">07</span>
+            </summary>
+            <div class="field-stack">
+              <label>
+                <span>Année de publication</span>
+                <select name="publicationYear" dir="rtl" lang="he">
+                  <option value="5786">ה׳תשפ״ו · 5786</option>
+                </select>
+              </label>
+              <label>
+                <span>Commémoration particulière</span>
+                <textarea name="commemoration" rows="2" dir="rtl" lang="he"></textarea>
+              </label>
+            </div>
+          </details>
+
+          <details>
+            <summary>
+              <span>Logo</span>
+              <span class="summary-index">08</span>
+            </summary>
+            <div class="field-stack">
+              <label>
+                <span>Logo de la couverture</span>
+                <select name="logoChoice">
+                  <option value="kehot">Logo Kehot</option>
+                  <option value="custom">Ajouter mon logo</option>
+                </select>
+              </label>
+              <label id="custom-logo-field" class="conditional-field" hidden>
+                <span>Fichier personnalisé</span>
+                <input id="logo-upload" name="logoUpload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
+                <small id="custom-logo-name">PNG, JPG, WebP ou SVG · 2 Mo maximum</small>
+              </label>
+            </div>
+          </details>
+        </form>
+      </aside>
+
+      <section class="preview-workspace" aria-label="Aperçu de la couverture">
+        <div class="preview-toolbar">
+          <div>
+            <p class="eyebrow">Aperçu en direct</p>
+            <p class="preview-note">Format final 6 × 9 pouces · export 300 ppp</p>
+          </div>
+          <div class="zoom-controls" aria-label="Zoom de l’aperçu">
+            <button id="zoom-out" class="icon-button" type="button" aria-label="Réduire le zoom">−</button>
+            <output id="zoom-output">72 %</output>
+            <button id="zoom-in" class="icon-button" type="button" aria-label="Augmenter le zoom">+</button>
+          </div>
+        </div>
+
+        <div id="preview-stage" class="preview-stage">
+          <div id="cover-frame" class="cover-frame">
+            <svg id="cover" viewBox="0 0 600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cover-title cover-description">
+              <title id="cover-title">Couverture personnalisée</title>
+              <desc id="cover-description">Aperçu d’une couverture de kovets avec ornement traditionnel et texte hébraïque.</desc>
+              <rect id="paper" width="600" height="900" fill="#fffefb" />
+              <g id="ornament" class="cover-ink" transform="scale(1.3888889)"></g>
+              <g id="cover-text" class="cover-ink" text-anchor="middle" direction="rtl">
+                <g id="header-layer">
+                  <line class="cover-ink-stroke" x1="100.5" x2="500.5" y1="128.5" y2="128.5" stroke-width="1.4" />
+                  <text id="header-text" class="header-text" x="300" y="115"></text>
+                </g>
+                <text id="main-title" class="main-title" x="300" y="238"></text>
+                <text id="attribution-text" class="attribution-text" x="300" y="282"></text>
+                <circle cx="300" cy="426" r="5.2" />
+                <text id="event-date-text" class="event-date-text" x="300" y="492"></text>
+                <text id="publication-text" class="publication-text" x="300" y="535"></text>
+                <text id="publisher-text" class="publisher-text" x="300" y="727"></text>
+                <text id="chronology-text" class="chronology-text" x="300" y="794"></text>
+              </g>
+
+              <image id="kehot-logo" href="assets/kehot-logo.png" x="261" y="570" width="78" height="97" preserveAspectRatio="xMidYMid meet" />
+            </svg>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js" defer></script>
+  </body>
+</html>
