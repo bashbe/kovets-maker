@@ -5,9 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Éditeur de couvertures 6 × 9 pour kovtsim de si'hot et maamarim." />
     <title>Kovets Maker</title>
-    <link rel="stylesheet" href="styles.css?v=20260714-5" />
+    <link rel="stylesheet" href="styles.css?v=20260715-3" />
   </head>
   <body>
+    <div id="preset-gate" class="preset-gate" role="dialog" aria-modal="true" aria-labelledby="preset-gate-title">
+      <div class="preset-gate-card">
+        <p class="eyebrow">Choisir avant de commencer</p>
+        <h2 id="preset-gate-title">Quel modèle veux-tu charger ?</h2>
+        <p>Les éléments fixes viennent directement des PDF. Tu modifieras ensuite seulement les petits détails.</p>
+        <div class="preset-grid">
+          <button type="button" class="preset-card" data-preset="hanochos">
+            <strong>Hanochos belahak</strong>
+            <span>Style התוועדות</span>
+          </button>
+          <button type="button" class="preset-card" data-preset="likkutei-vaad">
+            <strong>Likoutei Sichot - Vaad</strong>
+            <span>Style לקוטי שיחות du PDF פינחס</span>
+          </button>
+          <button type="button" class="preset-card" data-preset="likkutei-kehot">
+            <strong>Likoutei Sichot - Kehot</strong>
+            <span>Style לקוטי שיחות du PDF Kehot</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <header class="app-header">
       <div class="brand" aria-label="Kovets Maker">
         <span class="brand-mark" aria-hidden="true">ק</span>
@@ -18,6 +40,7 @@
       </div>
       <div class="header-actions">
         <span id="save-status" class="save-status" role="status">Prêt</span>
+        <button id="change-preset" class="button button-secondary" type="button">Changer de modèle</button>
         <button id="reset-button" class="button button-secondary" type="button">Réinitialiser</button>
         <button id="export-pdf" class="button button-primary" type="button">Exporter PDF</button>
       </div>
@@ -34,71 +57,57 @@
         </div>
 
         <form id="cover-form" autocomplete="off">
-          <details open>
+          <details open class="preset-section">
             <summary>
-              <span>מסגרת · Cadre</span>
+              <span>Point de départ</span>
               <span class="summary-index">01</span>
             </summary>
             <div class="field-stack">
               <label>
-                <span>Ornement de couverture</span>
-                <select name="frame">
-                  <option value="rebbe">Cadre des livres du Rabbi</option>
+                <span>Préréglage</span>
+                <select name="presetChoice">
+                  <option value="hanochos">Hanochos belahak · התוועדות</option>
+                  <option value="likkutei-vaad">Likoutei Sichot - Vaad</option>
+                  <option value="likkutei-kehot">Likoutei Sichot - Kehot</option>
                 </select>
               </label>
-            </div>
-          </details>
-
-          <details open>
-            <summary>
-              <span>En-tête de collection</span>
-              <span class="summary-index">02</span>
-            </summary>
-            <div class="field-stack">
-              <label class="toggle-row" for="show-header">
-                <span>
-                  <strong>Afficher l’en-tête</strong>
-                  <small>Le texte et la ligne sont activés ensemble.</small>
-                </span>
-                <input id="show-header" name="showHeader" type="checkbox" />
+              <label>
+                <span>Formule du Rabbi</span>
+                <select name="rebbeFormula" dir="rtl" lang="he">
+                  <option value="full">זצוקללה״ה נבג״מ זי״ע</option>
+                  <option value="clean">Sans la ligne זצוקללה״ה נבג״מ זי״ע</option>
+                  <option value="shlita">שליט״א</option>
+                </select>
               </label>
-              <p id="fixed-header-value" class="fixed-value" dir="rtl" lang="he"></p>
+              <p id="rebbe-formula-note" class="field-note"></p>
+              <p id="preset-summary" class="field-note"></p>
             </div>
           </details>
 
           <details open>
             <summary>
               <span>Titre</span>
-              <span class="summary-index">03</span>
+              <span class="summary-index">02</span>
             </summary>
             <div class="field-stack">
               <label>
                 <span>Titre principal</span>
                 <input name="title" dir="rtl" lang="he" />
               </label>
-            </div>
-          </details>
-
-          <details open>
-            <summary>
-              <span>Attribution au Rabbi</span>
-              <span class="summary-index">04</span>
-            </summary>
-            <div class="field-stack">
               <label>
-                <span>Formule prédéfinie</span>
-                <select name="attributionPreset" dir="rtl" lang="he">
-                  <option id="attribution-rebbe-full-option" value="rebbe-full"></option>
+                <span>Police du titre</span>
+                <select name="titleFont" dir="rtl" lang="he">
+                  <option value="hitvaadut">Police de התוועדות</option>
+                  <option value="likkutei">Police de לקוטי שיחות</option>
                 </select>
               </label>
-              <p id="fixed-attribution-preview" class="fixed-value fixed-value-multiline" dir="rtl" lang="he"></p>
             </div>
           </details>
 
           <details open>
             <summary>
               <span>Dates</span>
-              <span class="summary-index">05</span>
+              <span class="summary-index">03</span>
             </summary>
             <div class="field-stack">
               <label>
@@ -115,7 +124,7 @@
           <details>
             <summary>
               <span>Éditeur et adresse</span>
-              <span class="summary-index">06</span>
+              <span class="summary-index">04</span>
             </summary>
             <div class="field-stack">
               <div>
@@ -140,14 +149,12 @@
           <details>
             <summary>
               <span>Année et commémoration</span>
-              <span class="summary-index">07</span>
+              <span class="summary-index">05</span>
             </summary>
             <div class="field-stack">
               <label>
                 <span>Année de publication</span>
-                <select name="publicationYear" dir="rtl" lang="he">
-                  <option id="publication-year-5786-option" value="5786"></option>
-                </select>
+                <select name="publicationYear" dir="rtl" lang="he"></select>
               </label>
               <p id="fixed-publication-year-preview" class="fixed-value" dir="rtl" lang="he"></p>
               <label>
@@ -157,26 +164,6 @@
             </div>
           </details>
 
-          <details>
-            <summary>
-              <span>Logo</span>
-              <span class="summary-index">08</span>
-            </summary>
-            <div class="field-stack">
-              <label>
-                <span>Logo de la couverture</span>
-                <select name="logoChoice">
-                  <option value="kehot">Logo Kehot</option>
-                  <option value="custom">Ajouter mon logo</option>
-                </select>
-              </label>
-              <label id="custom-logo-field" class="conditional-field" hidden>
-                <span>Fichier personnalisé</span>
-                <input id="logo-upload" name="logoUpload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
-                <small id="custom-logo-name">PNG, JPG, WebP ou SVG · 2 Mo maximum</small>
-              </label>
-            </div>
-          </details>
         </form>
       </aside>
 
@@ -198,33 +185,31 @@
             <svg id="cover" viewBox="0 0 600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cover-title cover-description">
               <title id="cover-title">Couverture personnalisée</title>
               <desc id="cover-description">Aperçu d’une couverture de kovets avec ornement traditionnel et texte hébraïque.</desc>
-              <image href="assets/cover-template.png" width="600" height="900" preserveAspectRatio="none" />
+              <image id="cover-template-image" href="assets/cover-style-hanochos.png" width="600" height="900" preserveAspectRatio="none" />
               <g id="overlay-root">
-                <g id="header-mask-layer">
-                  <rect class="pdf-mask" x="94" y="98" width="412" height="36" />
-                </g>
                 <g id="editable-layer" class="cover-ink" text-anchor="middle" direction="rtl">
-                  <rect class="pdf-mask" x="158" y="184" width="284" height="72" />
+                  <rect id="title-mask" class="pdf-mask" x="158" y="184" width="284" height="72" />
                   <text id="main-title" class="main-title" x="300" y="238"></text>
 
-                  <rect class="pdf-mask" x="138" y="462" width="324" height="42" />
+                  <image id="rebbe-formula-image" href="assets/rebbe-formula-full.png" x="106" y="264" width="388" height="139" preserveAspectRatio="xMidYMid meet" />
+
+                  <rect id="event-date-mask" class="pdf-mask" x="138" y="462" width="324" height="42" />
                   <text id="event-date-text" class="event-date-text" x="300" y="485"></text>
 
-                  <rect class="pdf-mask" x="136" y="506" width="328" height="40" />
+                  <rect id="publication-mask" class="pdf-mask" x="136" y="506" width="328" height="40" />
                   <text id="publication-text" class="publication-text" x="300" y="525"></text>
 
                   <rect class="pdf-mask" x="218" y="718" width="164" height="29" />
                   <rect class="pdf-mask" x="96" y="744" width="408" height="25" />
                   <text id="publisher-text" class="publisher-text" x="300" y="738"></text>
 
+                  <rect class="pdf-mask" x="96" y="765" width="408" height="23" />
+                  <text id="publication-year-text" class="publication-year-text" x="300" y="780"></text>
+
                   <rect class="pdf-mask" x="168" y="782" width="264" height="27" />
                   <text id="chronology-text" class="chronology-text" x="300" y="796"></text>
                 </g>
 
-                <g id="custom-logo-layer" hidden>
-                  <rect class="pdf-mask" x="250" y="558" width="100" height="119" />
-                  <image id="custom-logo-preview" x="261" y="570" width="78" height="97" preserveAspectRatio="xMidYMid meet" />
-                </g>
               </g>
             </svg>
           </div>
@@ -233,7 +218,7 @@
     </main>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="assets/vendor/pdf-lib.min.js?v=20260714-5" defer></script>
-    <script src="app.js?v=20260714-5" defer></script>
+    <script src="assets/vendor/pdf-lib.min.js?v=20260714-7" defer></script>
+    <script src="app.js?v=20260715-15" defer></script>
   </body>
 </html>

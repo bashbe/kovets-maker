@@ -57,6 +57,18 @@ def extract(source: Path, destination: Path) -> None:
         for curve in curves:
             if curve.get("fill"):
                 lines.append(f'    <path d="{svg_path(curve["path"])}"/>')
+
+        for rectangle in rectangles:
+            if not rectangle.get("fill"):
+                continue
+            width = rectangle["x1"] - rectangle["x0"]
+            height = rectangle["bottom"] - rectangle["top"]
+            lines.append(
+                '    <rect '
+                f'x="{number(rectangle["x0"])}" '
+                f'y="{number(rectangle["top"])}" '
+                f'width="{number(width)}" height="{number(height)}"/>'
+            )
         lines.append("  </g>")
 
         # The stroked copies keep the small original edge details crisp.
@@ -73,6 +85,8 @@ def extract(source: Path, destination: Path) -> None:
                 )
 
         for rectangle in rectangles:
+            if not rectangle.get("stroke"):
+                continue
             width = rectangle["x1"] - rectangle["x0"]
             height = rectangle["bottom"] - rectangle["top"]
             lines.append(

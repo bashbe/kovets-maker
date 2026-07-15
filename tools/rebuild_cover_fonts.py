@@ -11,9 +11,15 @@ from __future__ import annotations
 
 import argparse
 import copy
+import io
 import json
 from pathlib import Path
 
+from fontTools.cffLib import CFFFontSet
+from fontTools.pens.boundsPen import BoundsPen
+from fontTools.pens.cu2quPen import Cu2QuPen
+from fontTools.pens.transformPen import TransformPen
+from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import TTFont, newTable
 from fontTools.ttLib.tables._c_m_a_p import CmapSubtable
 
@@ -55,6 +61,16 @@ SPECS = {
     },
     "david-regular": {
         "globs": ["*/TT6-David.ttf", "*/TT7-David.ttf"],
+        "cff_glob": "*/F*-TDavid-Normal.ttf",
+        # VTDavid-Normal is the same David drawing family in CFF form.  These
+        # are the final Hebrew letters missing from the extracted TrueType
+        # subsets; their names come from the PDF's Differences encoding.
+        "cff_glyph_map": {
+            "Iacute": 0x05DA,  # ך
+            "Ocircumflex": 0x05DF,  # ן
+            "Ucircumflex": 0x05E3,  # ף
+            "dotlessi": 0x05E5,  # ץ
+        },
         "family": "PDF JDavid Rebuilt",
         "style": "Regular",
         "weight": 400,
@@ -158,6 +174,63 @@ def ensure_browser_tables(font: TTFont) -> None:
     font["post"] = post
 
 
+def inject_cff_glyphs(font: TTFont, cff_paths: list[Path], spec: dict) -> dict[str, str]:
+    """Convert selected raw CFF glyphs into the merged font's ``glyf`` table.
+
+    The PDF CFF sources use a 0.001 FontMatrix while the extracted David
+    TrueType files use 2048 units per em.  We therefore scale the outlines by
+    2.048 and carry over the PDF advance width and left side bearing.  Cubic
+    CFF curves are reduced to quadratic TrueType curves with a sub-unit error.
+    """
+
+    glyph_map = spec.get("cff_glyph_map")
+    if not glyph_map or not cff_paths:
+        return {}
+
+    scale = font["head"].unitsPerEm * 0.001
+    glyph_order = font.getGlyphOrder()
+    injected: dict[str, str] = {}
+    for path in cff_paths:
+        cff = CFFFontSet()
+        cff.decompile(io.BytesIO(path.read_bytes()), None)
+        top = cff[cff.fontNames[0]]
+        for cff_name, codepoint in glyph_map.items():
+            target_gid = unicode_map(spec)[codepoint]
+            if cff_name not in top.CharStrings or target_gid >= len(glyph_order):
+                continue
+            target_name = glyph_order[target_gid]
+            # Prefer the first usable outline; the remaining PDF subsets are
+            # duplicates or smaller subsets of the same VTDavid face.
+            if target_name in injected:
+                continue
+            pen = TTGlyphPen(font.getGlyphSet())
+            quad_pen = Cu2QuPen(pen, max_err=0.5)
+            transform_pen = TransformPen(quad_pen, (scale, 0, 0, scale, 0, 0))
+            top.CharStrings[cff_name].draw(transform_pen)
+            font["glyf"][target_name] = pen.glyph()
+
+            # PDF Type1 widths are expressed in 1000-unit design space.  The
+            # CFF parser exposes the raw PDF width through the font's width
+            # array rather than on each charstring, so use the shape bounds for
+            # the left side bearing and retain the David default advance when
+            # no explicit width is available.
+            # ``pen.glyph()`` has already been consumed above; recalculate the
+            # left side bearing from the original CFF bounds instead.
+            cff_bounds = BoundsPen(None)
+            top.CharStrings[cff_name].draw(cff_bounds)
+            x_min = round((cff_bounds.bounds[0] if cff_bounds.bounds else 0) * scale)
+            # VTDavid's Type1 widths are stable for the injected glyphs.
+            width_1000 = {
+                "Iacute": 470,
+                "Ocircumflex": 304,
+                "Ucircumflex": 470,
+                "dotlessi": 443,
+            }[cff_name]
+            font["hmtx"].metrics[target_name] = (round(width_1000 * scale), x_min)
+            injected[target_name] = cff_name
+    return injected
+
+
 def unicode_map(spec: dict) -> dict[int, int]:
     if "unicode_to_gid" in spec:
         return dict(spec["unicode_to_gid"])
@@ -188,6 +261,11 @@ def merge_font(source_paths: list[Path], spec: dict) -> tuple[TTFont, dict]:
                 merged["hmtx"].metrics[glyph_name] = source["hmtx"].metrics[source.getGlyphOrder()[glyph_id]]
                 break
 
+    cff_paths = []
+    if spec.get("cff_glob"):
+        cff_paths = sorted({path for path in source_paths[0].parent.parent.glob(spec["cff_glob"])})
+    injected = inject_cff_glyphs(merged, cff_paths, spec)
+
     mapping = unicode_map(spec)
     cmap = build_cmap(merged, mapping)
     rename_font(merged, spec["family"], spec["style"])
@@ -208,6 +286,7 @@ def merge_font(source_paths: list[Path], spec: dict) -> tuple[TTFont, dict]:
         "available_characters": "".join(available_characters),
         "missing_characters": "".join(missing_characters),
         "mapped_codepoints": len(cmap),
+        "injected_cff_glyphs": injected,
     }
     if coverage_characters == HEBREW_ALPHABET:
         report["available_hebrew"] = report["available_characters"]

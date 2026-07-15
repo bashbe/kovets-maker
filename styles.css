@@ -1,6 +1,6 @@
 @font-face {
   font-family: "PDF JNarkis Rebuilt";
-  src: url("assets/fonts/PDF-narkis-regular.ttf?v=20260714-5") format("truetype");
+  src: url("assets/fonts/PDF-narkis-regular.ttf?v=20260714-7") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: "PDF JNarkis Rebuilt";
-  src: url("assets/fonts/PDF-narkis-bold.ttf?v=20260714-5") format("truetype");
+  src: url("assets/fonts/PDF-narkis-bold.ttf?v=20260714-7") format("truetype");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -24,15 +24,23 @@
 
 @font-face {
   font-family: "PDF JDavid Rebuilt";
-  src: url("assets/fonts/PDF-david-regular.ttf?v=20260714-5") format("truetype");
+  src: url("assets/fonts/PDF-david-regular.ttf?v=20260714-7") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 
 @font-face {
+  font-family: "PDF MHatzvi Rebuilt";
+  src: url("assets/fonts/PDF-hatzvi-bold.ttf?v=20260715-1") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "PDF JDavid Rebuilt";
-  src: url("assets/fonts/PDF-david-bold.ttf?v=20260714-5") format("truetype");
+  src: url("assets/fonts/PDF-david-bold.ttf?v=20260714-7") format("truetype");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -114,6 +122,81 @@ body {
   min-height: 100vh;
   background: var(--app-background);
   color: var(--ink);
+}
+
+.preset-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(39, 35, 31, 0.54);
+  backdrop-filter: blur(12px);
+}
+
+.preset-gate[hidden] {
+  display: none;
+}
+
+.preset-gate-card {
+  width: min(780px, 100%);
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.preset-gate-card h2 {
+  margin: 0;
+  font-size: 25px;
+  letter-spacing: -0.025em;
+}
+
+.preset-gate-card > p:not(.eyebrow) {
+  margin: 9px 0 22px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.preset-card {
+  display: grid;
+  min-height: 142px;
+  align-content: start;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--panel-strong);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.preset-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 10px 28px rgba(45, 38, 31, 0.1);
+  transform: translateY(-2px);
+}
+
+.preset-card strong {
+  font-family: "David Libre Local", David, serif;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.preset-card span {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 button,
@@ -368,6 +451,21 @@ label small,
   font-weight: 500;
 }
 
+.field-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.field-note-warning {
+  padding: 9px 10px;
+  border: 1px solid #dfc8a5;
+  border-radius: 8px;
+  background: #fbf3e7;
+  color: #76552f;
+}
+
 .field-caption {
   display: block;
   margin-bottom: 7px;
@@ -614,9 +712,19 @@ input[type="color"] {
   font-weight: 700;
 }
 
+#cover .main-title.title-font-likkutei {
+  font-family: "PDF MHatzvi Rebuilt", "PDF JNarkis Rebuilt", "Narkiss Yair Local", "David Libre Local", serif;
+}
+
 #cover .attribution-text {
+  font-family: "PDF JNarkis Rebuilt", "Narkiss Yair Local", "David Libre Local", serif;
   font-size: 23px;
   font-weight: 700;
+}
+
+#cover .attribution-separator {
+  font-family: "David Libre Local", serif;
+  font-weight: 400;
 }
 
 #cover .attribution-text .minor,
@@ -664,6 +772,12 @@ input[type="color"] {
   font-family: "PDF JNarkis Rebuilt", "Narkiss Yair Local", "David Libre Local", serif;
   font-size: 15px;
   font-weight: 700;
+}
+
+#cover .publication-year-text {
+  font-family: "PDF JNarkis Rebuilt", "Narkiss Yair Local", "David Libre Local", serif;
+  font-size: 14.5px;
+  font-weight: 400;
 }
 
 .toast {
@@ -743,6 +857,18 @@ input[type="color"] {
   .preview-stage {
     min-height: 600px;
     padding-inline: 12px;
+  }
+
+  .preset-gate-card {
+    padding: 22px;
+  }
+
+  .preset-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preset-card {
+    min-height: auto;
   }
 }
 

@@ -19,10 +19,14 @@ L’application ne nécessite ni compilation ni serveur applicatif. Le dossier p
 ## Fonctions disponibles
 
 - édition RTL en direct de tous les blocs de la première page ;
-- choix du cadre et activation globale de l’en-tête fixe ;
-- formules d’attribution et années de publication prédéfinies ;
+- choix obligatoire entre trois styles fixes avant l’édition : Hanochos belahak, Likoutei Sichot - Vaad et Likoutei Sichot - Kehot ;
+- sélection indépendante de trois formules du Rabbi dans chacun des styles : complète, sans `זצוקללה״ה נבג״מ זי״ע`, ou `שליט״א` ;
+- la formule courte est recomposée sans ligne vide et les lignes restantes sont recentrées plus bas ;
+- cadre, en-tête, séparateurs, logo et mention `יוצא לאור על ידי מערכת` conservés directement depuis les PDF fournis ;
+- toutes les années restent disponibles, mais `שליט״א` est automatiquement interdit après 5754 ;
+- sélection simple de l’année et génération automatique de son texte hébraïque complet ;
+- polices de titre התוועדות et לקוטי שיחות ;
 - champs distincts pour l’éditeur, la rue, la ville et la commémoration ;
-- choix du logo Kehot ou import d’un logo PNG, JPG, WebP ou SVG ;
 - redimensionnement automatique des lignes longues ;
 - sauvegarde locale automatique dans le navigateur ;
 - zoom responsive ;
@@ -32,7 +36,7 @@ La première page du PDF fourni sert directement de gabarit. Le cadre, le logo K
 
 ## Fontes des zones personnalisables
 
-Les fontes `PDF JNarkis Rebuilt` et `PDF JDavid Rebuilt` sont reconstruites à partir des sous-ensembles embarqués dans les premières pages des quatre couvertures fournies. Les CID/GID étant stables entre les documents, leurs vrais contours peuvent être fusionnés sans redessiner les lettres.
+Les fontes `PDF JNarkis Rebuilt`, `PDF JDavid Rebuilt` et `PDF MHatzvi Rebuilt` sont reconstruites à partir des sous-ensembles embarqués dans les couvertures fournies. Les CID/GID étant stables entre les documents, leurs vrais contours peuvent être fusionnés sans redessiner les lettres.
 
 - Narkis gras : alphabet couvert sauf `ג`, `ך` et `ץ` ;
 - Narkis régulier : alphabet couvert sauf `ג`, `ז`, `ך`, `ף` et `ץ` ;
