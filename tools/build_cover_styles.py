@@ -40,6 +40,27 @@ def crop_pdf(image: Image.Image, box: tuple[float, float, float, float]) -> Imag
     return image.crop(pdf_box_to_pixels(box)).convert("RGB")
 
 
+def paste_kehot_logo(image: Image.Image, logo_path: Path) -> None:
+    """Restore the Kehot logo at its original PDF scale without distortion."""
+    # The source PDF places R54 at 45.70248 x 54.339 points on a 396 x 612
+    # page.  Scale uniformly from the page height so the embedded bitmap keeps
+    # its exact proportions on the 432 x 648 target page.
+    source_logo = Image.open(logo_path).convert("RGB")
+    target_height = 54.339 * (PAGE_HEIGHT / 612)
+    target_width = target_height * (source_logo.width / source_logo.height)
+    target_x = (PAGE_WIDTH - target_width) / 2
+    target_y = 153.7794 * (PAGE_HEIGHT / 612)
+
+    # Remove every pixel of the previously page-scaled logo before restoring
+    # the source object itself.
+    white_box(image, (184, 155, 64, 72))
+    pixel_box = pdf_box_to_pixels((target_x, target_y, target_width, target_height))
+    width = pixel_box[2] - pixel_box[0]
+    height = pixel_box[3] - pixel_box[1]
+    restored = source_logo.resize((width, height), Image.Resampling.LANCZOS)
+    image.paste(restored, pixel_box[:2])
+
+
 def save_style(image: Image.Image, stem: Path) -> None:
     preview = image.resize((1200, 1800), Image.Resampling.LANCZOS)
     preview.save(stem.with_suffix(".png"), optimize=True)
@@ -90,7 +111,13 @@ def build_clean_formula(hanochos: Image.Image, destination: Path) -> None:
     save_trimmed_formula(result, destination)
 
 
-def build(hanochos_path: Path, vaad_path: Path, kehot_path: Path, output_dir: Path) -> None:
+def build(
+    hanochos_path: Path,
+    vaad_path: Path,
+    kehot_path: Path,
+    kehot_logo_path: Path,
+    output_dir: Path,
+) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     hanochos = Image.open(hanochos_path).convert("RGB").resize((RENDER_WIDTH, RENDER_HEIGHT))
     vaad = Image.open(vaad_path).convert("RGB").resize((RENDER_WIDTH, RENDER_HEIGHT))
@@ -99,11 +126,12 @@ def build(hanochos_path: Path, vaad_path: Path, kehot_path: Path, output_dir: Pa
 
     # Preserve the common Hanochos bottom content while retaining the Kehot
     # frame itself on the sides and along the lower edge.
-    bottom_box = pdf_box_to_pixels((70, 55, 292, 125))
+    bottom_box = pdf_box_to_pixels((70, 55, 292, 98))
     kehot.paste(hanochos.crop(bottom_box), bottom_box[:2])
     # Restore the original Kehot lower frame over the shared bottom content.
     frame_bottom_box = pdf_box_to_pixels((0, 0, 432, 68))
     kehot.paste(kehot_original.crop(frame_bottom_box), frame_bottom_box[:2])
+    paste_kehot_logo(kehot, kehot_logo_path)
 
     hanochos_style = hanochos.copy()
     white_box(hanochos_style, (76, 357, 280, 104))
@@ -128,9 +156,16 @@ def main() -> None:
     parser.add_argument("hanochos_render", type=Path)
     parser.add_argument("vaad_render", type=Path)
     parser.add_argument("kehot_render", type=Path)
+    parser.add_argument("kehot_logo", type=Path)
     parser.add_argument("output_dir", type=Path)
     args = parser.parse_args()
-    build(args.hanochos_render, args.vaad_render, args.kehot_render, args.output_dir)
+    build(
+        args.hanochos_render,
+        args.vaad_render,
+        args.kehot_render,
+        args.kehot_logo,
+        args.output_dir,
+    )
 
 
 if __name__ == "__main__":

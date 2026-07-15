@@ -65,7 +65,7 @@ const TEMPLATE_ASSETS = Object.freeze({
     pdf: "assets/cover-style-vaad.pdf",
   },
   "likkutei-kehot": {
-    png: "assets/cover-style-kehot.png?v=20260715-2",
+    png: "assets/cover-style-kehot.png?v=20260715-3",
     pdf: "assets/cover-style-kehot.pdf",
   },
 });
